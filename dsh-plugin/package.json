@@ -1,7 +1,7 @@
 {
   "name": "@local/conversation-structure-ui",
   "version": "0.1.0-preview.1",
-  "private": true,
+  "private": false,
   "type": "module",
   "description": "Anchored conversation branch UI for DeepSeek Harness.",
   "exports": {
@@ -36,5 +36,14 @@
     "type": "git",
     "url": "https://github.com/maple564/dsh.git",
     "directory": "dsh-plugin"
-  }
+  },
+  "author": "maple564",
+  "homepage": "https://github.com/maple564/dsh#readme",
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "conversation-branching",
+    "chat-ui",
+    "context-management"
+  ]
 }
