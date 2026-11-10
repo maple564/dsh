@@ -1,0 +1,8 @@
+/data/
+node_modules/
+.env*
+*.credentials*
+*.tmp
+*.log
+*.zip
+*.tgz

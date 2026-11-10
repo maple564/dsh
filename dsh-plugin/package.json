@@ -1,0 +1,40 @@
+{
+  "name": "@local/conversation-structure-ui",
+  "version": "0.1.0-preview.1",
+  "private": true,
+  "type": "module",
+  "description": "Anchored conversation branch UI for DeepSeek Harness.",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "LICENSE",
+    "README.md"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-conversation"
+      ]
+    }
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/maple564/dsh.git",
+    "directory": "dsh-plugin"
+  }
+}

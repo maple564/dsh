@@ -1,0 +1,3 @@
+- insert:
+    - id: conversation-structure-ui
+      name: '@local/conversation-structure-ui'

@@ -1,0 +1,94 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>对话结构 · 路径动效预览</title><style>
+      .cs-ui {
+        --cs-panel: rgba(23, 28, 36, .97); --cs-card: #1d242e; --cs-card-active: #242d38;
+        --cs-border: #35404e; --cs-border-soft: #2b3440; --cs-text: #e7e9ed;
+        --cs-muted: #a2aab5; --cs-accent: #9bb8ad; --cs-accent-strong: #b2d0c3;
+        --cs-accent-wash: rgba(155, 184, 173, .12); --cs-danger: #e0a38e;
+        color: var(--cs-text); font-family: inherit;
+      }
+      .cs-ui button, .cs-ui input { font: inherit; }
+      .cs-field {
+        background: #171c23; color: var(--cs-text); border: 1px solid var(--cs-border);
+        border-radius: 8px; padding: 8px 10px; transition: border-color .16s, box-shadow .16s;
+      }
+      .cs-field::placeholder { color: #87919e; }
+      .cs-field:focus { outline: none; border-color: var(--cs-accent); box-shadow: 0 0 0 3px var(--cs-accent-wash); }
+      .cs-button {
+        background: #34443f; color: #e6eee9; border: 1px solid #50635b; border-radius: 8px;
+        padding: 7px 11px; cursor: pointer; transition: background .16s, border-color .16s, transform .16s;
+      }
+      .cs-button:hover { background: #40534b; border-color: #73877d; transform: translateY(-1px); }
+      .cs-button:active { transform: translateY(0); }
+      .cs-button:disabled { opacity: .5; cursor: default; transform: none; }
+      .cs-button--quiet { background: #252c35; border-color: var(--cs-border); color: #c6cbd2; }
+      .cs-tree-shell { position: fixed; right: 18px; top: 80px; z-index: 1000; font-size: 13px; pointer-events: auto; }
+      .cs-tree-trigger { background: #252e34; color: #e3ebe7; border: 1px solid #4b5b54; border-radius: 9px; padding: 8px 12px; cursor: pointer; transition: all .18s; }
+      .cs-tree-trigger:hover { background: #303d38; border-color: var(--cs-accent); }
+      .cs-tree-panel {
+        box-sizing: border-box; width: min(350px, calc(100vw - 36px)); max-height: min(70vh, 720px); overflow-y: auto; margin-top: 8px;
+        border: 1px solid var(--cs-border); border-radius: 14px; padding: 14px;
+        background: var(--cs-panel); color: var(--cs-text); box-shadow: 0 18px 48px rgba(0,0,0,.34);
+        backdrop-filter: blur(16px); animation: cs-panel-in .2s cubic-bezier(.2,.75,.3,1) both;
+      }
+      .cs-tree-title { font-weight: 650; letter-spacing: .02em; margin: 0; }
+      .cs-tree-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+      .cs-tree-count { color: var(--cs-muted); font-size: 11px; border: 1px solid var(--cs-border-soft); border-radius: 20px; padding: 3px 8px; }
+      .cs-tree-location { color: var(--cs-accent-strong); font-size: 12px; line-height: 1.6; padding: 9px 10px; margin: 8px 0; background: var(--cs-accent-wash); border-radius: 8px; overflow-wrap: anywhere; }
+      .cs-tree-legend { color: var(--cs-muted); font-size: 11px; line-height: 1.5; margin: 10px 0 2px; }
+      .cs-current-badge { display: inline-flex; align-items: center; gap: 5px; color: #d4e9df; background: #35483f; border: 1px solid #506c5d; border-radius: 20px; padding: 2px 7px; font-size: 10px; margin-right: 5px; vertical-align: middle; }
+      .cs-current-badge::before { content: ''; width: 5px; height: 5px; background: #b2d0c3; border-radius: 50%; box-shadow: 0 0 7px #9bb8ad66; }
+      .cs-tree-root, .cs-tree-collapse { background: transparent; border: 0; color: var(--cs-muted); cursor: pointer; padding: 5px 6px; }
+      .cs-tree-root:hover, .cs-tree-collapse:hover { color: var(--cs-text); }
+      .cs-tree-children, .cs-tree-nested { margin: 10px 0 0; display: grid; gap: 8px; }
+      .cs-tree-node-wrap { position: relative; min-width: 0; padding-left: 24px; }
+      .cs-tree-node-wrap::before { content: ''; position: absolute; left: 3px; top: 0; bottom: -8px; width: 1px; background: var(--cs-border-soft); }
+      .cs-tree-node-wrap:last-child::before { bottom: auto; height: 22px; }
+      .cs-tree-edge { position: absolute; left: 0; top: 0; width: 24px; height: 36px; overflow: visible; pointer-events: none; fill: none; }
+      .cs-tree-edge-base, .cs-tree-edge-arrow { stroke: #47534f; stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; }
+      .cs-tree-edge-flow { display: none; stroke: #c2dece; stroke-width: 1.8; stroke-linecap: round; stroke-dasharray: 7 20; animation: cs-path-flow 1.8s linear infinite; }
+      .cs-tree-node-wrap[data-on-path="true"] > .cs-tree-edge .cs-tree-edge-base { stroke: #708f80; }
+      .cs-tree-node-wrap[data-on-path="true"] > .cs-tree-edge .cs-tree-edge-arrow { stroke: #b2d0c3; }
+      .cs-tree-node-wrap[data-on-path="true"] > .cs-tree-edge .cs-tree-edge-flow { display: block; }
+      .cs-tree-node-wrap[data-on-path="true"] > .cs-tree-node { border-color: #52675b; }
+      .cs-tree-node {
+        background: #1b222b; color: var(--cs-text); border: 1px solid var(--cs-border-soft);
+        border-radius: 9px; padding: 9px 10px; transition: background .16s, border-color .16s;
+      }
+      .cs-tree-node:hover { border-color: #526057; background: #202831; }
+      .cs-tree-node[data-active="true"] { border-color: #71867b; background: #26332f; box-shadow: inset 2px 0 var(--cs-accent); }
+      .cs-tree-node[data-active="true"] > summary { color: #edf5ef; }
+      .cs-ui button:focus-visible, .cs-ui summary:focus-visible { outline: 2px solid var(--cs-accent-strong); outline-offset: 3px; }
+      .cs-tree-node summary, .cs-card summary { cursor: pointer; list-style-position: outside; }
+      .cs-tree-node summary { color: #e4e8e6; }
+      .cs-tree-preview { color: var(--cs-muted); font-size: 12px; line-height: 1.55; white-space: pre-wrap; margin: 7px 0; }
+      .cs-tree-empty { color: var(--cs-muted); padding: 7px; }
+      .cs-card {
+        border: 1px solid var(--cs-border); border-radius: 10px; background: #1b222b;
+        color: var(--cs-text); padding: 9px 12px; transition: border-color .18s, background .18s;
+      }
+      .cs-card:hover, .cs-card[open] { border-color: #65786e; background: #202831; }
+      .cs-card summary { color: #dfe5e1; font-size: 13px; }
+      .cs-card-content { padding: 9px 2px 2px; color: #cbd1d5; font-size: 12px; line-height: 1.65; }
+      .cs-card-answer { white-space: pre-wrap; color: #e0e3e5; margin-top: 6px; }
+      .cs-status { color: var(--cs-muted); }
+      .cs-experiment-option { display: inline-flex; align-items: center; gap: 6px; color: var(--cs-muted); font-size: 11px; padding: 3px 2px; }
+      .cs-experiment-option input { accent-color: var(--cs-accent); }
+      [data-anchor-status="mapped"] .cs-status { color: var(--cs-accent-strong); animation: cs-anchor-in .32s ease-out both; }
+      [data-anchor-status="rejected"] .cs-status { color: var(--cs-danger); }
+      @keyframes cs-panel-in { from { opacity: 0; transform: translateY(7px) scale(.99); } to { opacity: 1; transform: none; } }
+      @keyframes cs-anchor-in { from { opacity: .45; transform: translateY(2px); } to { opacity: 1; transform: none; } }
+      @keyframes cs-path-flow { to { stroke-dashoffset: -27; } }
+      .cs-tree-shell[data-motion="off"] *, .cs-tree-shell[data-motion="off"] *::before, .cs-tree-shell[data-motion="off"] *::after { animation: none !important; transition: none !important; }
+      .cs-tree-shell[data-motion="off"] .cs-tree-edge-flow { display: none !important; }
+      @media (prefers-reduced-motion: reduce) {
+        .cs-ui *, .cs-ui *::before, .cs-ui *::after { animation: none !important; transition: none !important; }
+        .cs-tree-edge-flow { display: none !important; }
+      }
+
+body{margin:0;background:#101419;color:#e7e9ed;font-family:system-ui,"Microsoft Yahei",sans-serif}main{max-width:920px;margin:7vh auto;padding:24px;display:grid;grid-template-columns:1fr 380px;gap:48px}h1{font-size:28px;letter-spacing:-.04em;font-weight:600}p{color:#a2aab5;line-height:1.9}.intro{padding-top:30px}.eyebrow{font-size:12px;letter-spacing:.12em;color:#9bb8ad}.cs-tree-shell{position:relative;right:auto;top:auto}.cs-tree-panel{width:100%;max-height:80vh}.cs-tree-node summary{line-height:1.8}.pick{display:block;margin-top:10px}.intro button{margin:5px}footer{font-size:12px;color:#87919e;margin-top:30px}@media(max-width:720px){main{grid-template-columns:1fr;gap:16px;margin:0 auto}.intro{padding:0}}
+</style><main><section class="intro cs-ui"><div class="eyebrow">CONVERSATION STRUCTURE</div><h1>知道自己走到了哪里。</h1><p>灰绿连线沿当前路径流动，箭头指向正在查看的分支。平行话题保持静态，避免同时抢夺注意力。</p><p>点右侧“切换到这里”，观察流动路径如何变化；也可以收起节点或关闭动效。</p><button class="cs-button" id="root">回到主线</button><footer>交互示意 · 不连接 DSH，不发送模型请求。<br>系统开启“减少动态效果”时自动使用静态高亮。</footer></section><section class="cs-ui cs-tree-shell" data-motion="on" id="shell"><div class="cs-tree-panel"><div class="cs-tree-heading"><div class="cs-tree-title">对话结构</div><span class="cs-tree-count">3 条一级支线</span></div><div id="location" class="cs-tree-location"></div><button id="motion" class="cs-tree-collapse" aria-pressed="true">路径动效：开</button><div id="tree" class="cs-tree-children"></div><p class="cs-tree-legend">高亮连线表示当前位置的路径，与模型是否生成无关。</p></div></section></main><script>
+const rows=[{id:'matrix',title:'矩阵分解与迭代法',parent:'root'},{id:'integral',title:'数值积分',parent:'root'},{id:'error',title:'余项表达式',parent:'integral'},{id:'calculator',title:'991CN X 使用',parent:'root'}];let current='error';
+const edge='<svg class="cs-tree-edge" viewBox="0 0 24 36" aria-hidden="true" focusable="false"><path class="cs-tree-edge-base" d="M3 0 V14 Q3 22 11 22 H22"/><path class="cs-tree-edge-flow" d="M3 0 V14 Q3 22 11 22 H22"/><path class="cs-tree-edge-arrow" d="M18 18 L22 22 L18 26"/></svg>';
+function render(){const active=new Set();let id=current;const names=[];while(id!=='root'){const row=rows.find(r=>r.id===id);active.add(id);names.unshift(row.title);id=row.parent}document.getElementById('location').textContent='所在路径 · '+['计算方法',...names].join(' → ');function branch(row){const children=rows.filter(r=>r.parent===row.id);return '<div class="cs-tree-node-wrap" data-on-path="'+active.has(row.id)+'">'+edge+'<details class="cs-ui cs-tree-node" data-active="'+(current===row.id)+'" '+(active.has(row.id)?'open':'')+'><summary '+(current===row.id?'aria-current="location"':'')+'>'+(current===row.id?'<span class="cs-current-badge">当前位置</span>':'')+row.title+'</summary><div class="cs-tree-preview">示例话题，可独立展开与返回。</div><button class="cs-button pick" data-pick="'+row.id+'">切换到这里</button>'+(children.length?'<div class="cs-tree-nested">'+children.map(branch).join('')+'</div>':'')+'</details></div>'}document.getElementById('tree').innerHTML=rows.filter(r=>r.parent==='root').map(branch).join('');document.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{current=b.dataset.pick;render();document.querySelector('[data-pick="'+current+'"]').focus()})}
+document.getElementById('root').onclick=()=>{current='root';render()};document.getElementById('motion').onclick=function(){const shell=document.getElementById('shell');const on=shell.dataset.motion!=='on';shell.dataset.motion=on?'on':'off';this.textContent='路径动效：'+(on?'开':'关');this.setAttribute('aria-pressed',String(on))};render();
+</script></html>

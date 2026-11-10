@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Conversation Structure · 交互演示</title>
+  <style>
+    :root { color-scheme: dark; font-family: Inter, "Microsoft YaHei", sans-serif; background: #0b1016; color: #e7edf5; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    .app { display: grid; grid-template-columns: 280px minmax(0, 1fr); min-height: 100vh; }
+    aside { background: #101923; border-right: 1px solid #283847; padding: 24px 18px; }
+    .brand { font-weight: 800; font-size: 19px; letter-spacing: .02em; }
+    .brand small { display: block; color: #78baca; font-size: 11px; letter-spacing: .16em; margin-top: 6px; }
+    .sidebar-title { color: #8ba0af; font-size: 12px; font-weight: 700; text-transform: uppercase; margin: 40px 8px 12px; }
+    .tree-tools { display: flex; gap: 6px; margin: 0 8px 12px; }
+    .tree-tools button { flex: 1; border: 1px solid #36505d; background: #152633; color: #a9c6cb; border-radius: 7px; padding: 6px; font-size: 11px; }
+    .tree-tools button:hover { background: #21404a; }
+    .tree { list-style: none; margin: 0; padding: 0; }
+    .tree li { margin: 3px 0 3px 10px; border-left: 1px solid #39505d; padding-left: 10px; }
+    .tree li.root { margin-left: 0; border: 0; padding-left: 0; }
+    .tree-row { display: flex; align-items: center; border-radius: 8px; }
+    .tree button { display: flex; text-align: left; align-items: center; gap: 9px; background: none; border: 0; color: #b8c6d4; border-radius: 8px; padding: 9px 8px; }
+    .tree button:hover, .tree button.current { background: #193341; color: white; }
+    .tree .tree-toggle { flex: none; width: 27px; justify-content: center; padding: 8px 3px; color: #82b9bd; }
+    .tree .tree-jump { min-width: 0; flex: 1; }
+    .tree-detail { margin: 2px 5px 11px 27px; border-left: 2px solid #4c8c8b; padding: 4px 0 5px 11px; color: #b6c8d0; font-size: 12px; line-height: 1.55; }
+    .tree-detail p { margin: 5px 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .tree-detail .tree-answer { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
+    .tree-detail button { padding: 4px 0; color: #79d8c5; }
+    .tree-state { flex: none; color: #91aab4; font-size: 11px; padding-right: 6px; }
+    .dot { flex: none; width: 8px; height: 8px; background: #6693a1; border-radius: 50%; }
+    .dot.active { background: #57dab7; box-shadow: 0 0 0 4px #57dab722; }
+    .dot.resolved { background: #9ac175; }
+    .tree-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .hint { color: #8497a8; line-height: 1.65; font-size: 12px; margin: 30px 8px 0; }
+    main { min-width: 0; height: 100vh; display: flex; flex-direction: column; }
+    header { min-height: 72px; border-bottom: 1px solid #263746; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 16px 32px; }
+    .path { font-size: 12px; color: #8ea8b4; margin-bottom: 5px; }
+    h1 { font-size: 18px; margin: 0; }
+    .badge { border: 1px solid #366173; border-radius: 100px; color: #79d0d5; font-size: 11px; padding: 5px 9px; white-space: nowrap; }
+    .chat { flex: 1; overflow-y: auto; padding: 28px max(32px, calc((100% - 820px) / 2)); scroll-behavior: smooth; }
+    .message { margin: 0 0 26px; }
+    .message.user { margin-left: 12%; background: #1e2a35; border: 1px solid #324557; border-radius: 16px; padding: 14px 17px; }
+    .role { color: #73b7ba; font-weight: 700; font-size: 12px; letter-spacing: .1em; margin-bottom: 12px; }
+    .message.user .role { color: #a7b9ca; }
+    .answer-text { line-height: 1.88; white-space: pre-wrap; font-size: 15px; cursor: text; }
+    .answer-text::selection { background: #256d7c; }
+    .answer-text.flash { outline: 2px solid #60d7bd; outline-offset: 8px; border-radius: 4px; }
+    .card { margin: 16px 0 18px; border: 1px solid #365965; border-radius: 13px; background: #132630; overflow: hidden; }
+    .card summary { cursor: pointer; list-style: none; padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
+    .card summary::-webkit-details-marker { display: none; }
+    .card .glyph { color: #61cfbd; font-size: 19px; }
+    .card .title { flex: 1; min-width: 0; }
+    .card strong { display: block; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .card small { color: #9db4c0; }
+    .card .inside { border-top: 1px solid #365965; padding: 14px 16px; color: #cfdee7; line-height: 1.6; font-size: 13px; }
+    .card .inside button { margin-top: 12px; }
+    .card-turn { margin: 12px 0; padding: 10px 12px; border-radius: 8px; background: #0d1e27; }
+    .card-turn strong { margin-bottom: 4px; }
+    .card-turn span { display: block; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .actions { border-top: 1px solid #263746; background: #111b25; padding: 17px max(32px, calc((100% - 820px) / 2)); }
+    .actions > div { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .actions label { display: block; color: #9ab1bc; font-size: 12px; margin-bottom: 8px; }
+    input { flex: 1; min-width: 180px; background: #0c151e; border: 1px solid #3a5260; color: white; border-radius: 8px; padding: 10px 12px; outline: none; }
+    input:focus { border-color: #63cbbd; }
+    button.primary { background: #55c7b7; border: 0; color: #08251f; font-weight: 700; border-radius: 8px; padding: 10px 14px; }
+    button.secondary { background: #243744; border: 1px solid #466070; color: #dbe9ed; border-radius: 8px; padding: 9px 12px; }
+    .actions > .selection { display: none; margin-bottom: 16px; }
+    .actions > .selection.visible { display: block; }
+    .selected-quote { display: block; color: #75dec4; font-size: 13px; margin-bottom: 9px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .actions > .return { display: none; margin-bottom: 16px; }
+    .actions > .return.visible { display: block; }
+    .status { min-height: 20px; color: #e6aa82; font-size: 12px; margin-top: 8px; }
+    @media (max-width: 760px) { .app { grid-template-columns: 1fr; } aside { display: none; } header { padding: 15px 20px; } .chat { padding: 24px 20px; } .actions { padding: 14px 20px; } }
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside><div class="brand">Conversation Structure<small>INTERACTIVE DEMO</small></div><div class="sidebar-title">结构导航</div><div class="tree-tools"><button id="expandAll" type="button">全部展开</button><button id="collapseAll" type="button">全部收起</button></div><ul class="tree" id="tree"></ul><p class="hint">选中 AI 回答中的文字，创建支线。点击树节点查看内容；暂停的支线可继续。</p></aside>
+  <main>
+    <header><div><div class="path" id="path"></div><h1 id="title"></h1></div><span class="badge">本地状态引擎 · 示例回答</span></header>
+    <div class="chat" id="chat"></div>
+    <section class="actions">
+      <div class="selection" id="selection"><label>从选中片段创建支线</label><span class="selected-quote" id="quote"></span><div><input id="question" placeholder="想深入了解什么？" aria-label="支线问题"><button class="primary" id="branchButton">开启支线 ↗</button><button class="secondary" id="cancelButton">取消</button></div></div>
+      <div class="return" id="return"><label>结束当前支线并返回来源回答</label><div><input id="summary" placeholder="写一句要带回主线的结论" aria-label="支线结论"><button class="primary" id="resolveButton">带回结论</button><button class="secondary" id="pauseButton">暂停并返回</button></div></div>
+      <div class="status" id="status" role="status"></div>
+    </section>
+  </main>
+</div>
+<script>
+  const $ = (id) => document.getElementById(id);
+  let state, viewNodeId, selection, returnTarget;
+  const expandedNodes = new Set(['root']);
+  const chat = $('chat');
+  const node = (tag, className, text) => { const el = document.createElement(tag); if (className) el.className = className; if (text !== undefined) el.textContent = text; return el; };
+  const active = () => state.session.activeNodeId;
+  const branchFor = (id) => state.branches.find((b) => b.nodeId === id);
+  const viewPath = (id) => {
+    const parts = [];
+    while (id !== 'root') {
+      const branch = branchFor(id);
+      if (!branch) break;
+      parts.unshift(branch.question);
+      id = branch.parentNodeId;
+    }
+    return [state.session.title, ...parts].join(' / ');
+  };
+  const status = (message) => { $('status').textContent = message || ''; };
+  const statusLabel = (value) => ({ active: '进行中', paused: '已暂停', resolved: '已解决', abandoned: '已放弃' })[value] || value;
+  const openActivePath = () => state.path.forEach((part) => expandedNodes.add(part.id));
+
+  async function request(route, input) {
+    const res = await fetch('/api/' + route, { method: input ? 'POST' : 'GET', headers: { 'content-type': 'application/json' }, body: input ? JSON.stringify(input) : undefined });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || data.error);
+    return data;
+  }
+  async function update(route, input) {
+    try { state = await request(route, { ...input, expectedRevision: state.session.revision }); viewNodeId = active(); selection = null; openActivePath(); render(); status('状态已保存 · revision ' + state.session.revision); return true; }
+    catch (error) { status(error.message); return false; }
+  }
+  function saveReading(sourceId, anchor) {
+    const answer = document.querySelector('[data-source-id="' + sourceId + '"]');
+    if (!answer) return;
+    returnTarget = { sourceId, anchor, y: answer.getBoundingClientRect().top };
+  }
+  function restoreReading() {
+    if (!returnTarget) return;
+    const answer = document.querySelector('[data-source-id="' + returnTarget.sourceId + '"]');
+    if (answer) {
+      chat.scrollTop += answer.getBoundingClientRect().top - returnTarget.y;
+      answer.classList.add('flash');
+      setTimeout(() => answer.classList.remove('flash'), 1400);
+    }
+    returnTarget = null;
+  }
+  function addTree(parent, id) {
+    const branch = branchFor(id);
+    const li = node('li', id === 'root' ? 'root' : '');
+    const row = node('div', 'tree-row');
+    const expanded = expandedNodes.has(id);
+    const toggle = node('button', 'tree-toggle', expanded ? '▾' : '▸');
+    toggle.type = 'button';
+    toggle.setAttribute('aria-expanded', String(expanded));
+    toggle.setAttribute('aria-label', (expanded ? '收起' : '展开') + (id === 'root' ? '主线' : branch.question));
+    toggle.onclick = () => { expanded ? expandedNodes.delete(id) : expandedNodes.add(id); render(); };
+    const button = node('button', 'tree-jump' + (viewNodeId === id ? ' current' : ''));
+    button.type = 'button';
+    const dot = node('span', 'dot ' + (id === active() ? 'active' : (branch?.status || '')));
+    const label = node('span', 'tree-label', id === 'root' ? '主线 · ' + state.session.title : branch.question);
+    button.append(dot, label);
+    button.onclick = () => { viewNodeId = id; selection = null; expandedNodes.add(id); render(); chat.scrollTop = 0; };
+    row.append(toggle, button);
+    if (branch) row.append(node('span', 'tree-state', statusLabel(branch.status)));
+    li.append(row);
+    if (expanded) {
+      const detail = node('div', 'tree-detail');
+      if (branch) detail.append(node('p', '', '锚点：“' + branch.anchor.text + '”'));
+      const firstAnswer = state.turns.find((turn) => turn.nodeId === id && turn.role === 'assistant');
+      if (firstAnswer) detail.append(node('p', 'tree-answer', firstAnswer.text));
+      if (branch?.summary) detail.append(node('p', '', '带回结论：' + branch.summary));
+      const read = node('button', '', '在主区域阅读 →');
+      read.type = 'button';
+      read.onclick = () => { viewNodeId = id; selection = null; render(); chat.scrollTop = 0; };
+      detail.append(read);
+      li.append(detail);
+      const children = state.branches.filter((b) => b.parentNodeId === id);
+      if (children.length) { const ul = node('ul', 'tree'); children.forEach((b) => addTree(ul, b.nodeId)); li.append(ul); }
+    }
+    parent.append(li);
+  }
+  function addCard(parent, branch) {
+    const details = node('details', 'card');
+    const summary = node('summary');
+    summary.append(node('span', 'glyph', '↳'));
+    const title = node('span', 'title');
+    title.append(node('strong', '', branch.question), node('small', '', statusLabel(branch.status) + ' · 锚点：' + branch.anchor.text));
+    summary.append(title, node('span', '', '⌄'));
+    details.append(summary);
+    const inside = node('div', 'inside');
+    if (branch.summary) inside.append(node('div', '', '带回结论：' + branch.summary));
+    state.turns.filter((turn) => turn.nodeId === branch.nodeId).forEach((turn) => {
+      const entry = node('div', 'card-turn');
+      entry.append(node('strong', '', turn.role === 'assistant' ? 'AI 回答' : '支线问题'));
+      entry.append(node('span', '', turn.text));
+      inside.append(entry);
+    });
+    const open = node('button', 'secondary', '查看支线');
+    open.onclick = () => { viewNodeId = branch.nodeId; selection = null; render(); };
+    inside.append(open);
+    details.append(inside); parent.append(details);
+  }
+  function render() {
+    $('tree').replaceChildren(); addTree($('tree'), 'root');
+    const shown = branchFor(viewNodeId);
+    $('path').textContent = viewPath(viewNodeId) + (viewNodeId !== active() ? ' / 浏览历史' : '');
+    $('title').textContent = shown ? shown.question : state.session.title;
+    chat.replaceChildren();
+    state.turns.filter((t) => t.nodeId === viewNodeId).forEach((turn) => {
+      const message = node('article', 'message ' + turn.role);
+      message.append(node('div', 'role', turn.role === 'assistant' ? 'AI 回答' : '你'));
+      if (turn.role === 'assistant') {
+        const source = state.sources.find((s) => s.turnId === turn.id);
+        const answer = node('div', 'answer-text', turn.text);
+        answer.dataset.sourceId = source.id;
+        message.append(answer);
+        state.branches.filter((b) => b.sourceId === source.id).forEach((b) => addCard(message, b));
+      } else message.append(node('div', '', turn.text));
+      chat.append(message);
+    });
+    $('selection').classList.toggle('visible', !!selection && viewNodeId === active());
+    $('quote').textContent = selection ? '“' + selection.anchor + '”' : '';
+    $('return').classList.toggle('visible', active() !== 'root' && viewNodeId === active());
+    if (shown?.status === 'paused' && shown.parentNodeId === active()) {
+      const resume = node('button', 'secondary', '继续这条支线');
+      resume.onclick = () => update('resume', { branchId: shown.id });
+      chat.prepend(resume);
+    }
+  }
+  chat.addEventListener('mouseup', () => {
+    const picked = window.getSelection();
+    const answer = picked?.anchorNode?.parentElement?.closest('.answer-text');
+    if (!answer || answer !== picked.focusNode?.parentElement?.closest('.answer-text') || viewNodeId !== active()) return;
+    const range = picked.getRangeAt(0);
+    const rawAnchor = range.toString();
+    const anchor = rawAnchor.trim();
+    if (!anchor) return;
+    const before = document.createRange();
+    before.selectNodeContents(answer);
+    before.setEnd(range.startContainer, range.startOffset);
+    const anchorStart = before.toString().length + rawAnchor.length - rawAnchor.trimStart().length;
+    selection = { sourceId: answer.dataset.sourceId, anchor, anchorStart };
+    render(); $('question').focus();
+  });
+  $('cancelButton').onclick = () => { selection = null; render(); };
+  $('expandAll').onclick = () => { expandedNodes.add('root'); state.branches.forEach((branch) => expandedNodes.add(branch.nodeId)); render(); };
+  $('collapseAll').onclick = () => { expandedNodes.clear(); render(); };
+  $('branchButton').onclick = async () => {
+    const question = $('question').value.trim();
+    if (!selection || !question) return status('请先选中文字并输入问题。');
+    saveReading(selection.sourceId, selection.anchor);
+    if (await update('branch', { ...selection, question })) { $('question').value = ''; chat.scrollTop = 0; }
+  };
+  $('resolveButton').onclick = async () => {
+    const summary = $('summary').value.trim();
+    if (!summary) return status('请先填写要带回的结论。');
+    if (await update('return', { disposition: 'resolved', summary })) { $('summary').value = ''; requestAnimationFrame(restoreReading); }
+  };
+  $('pauseButton').onclick = async () => { if (await update('return', { disposition: 'paused' })) requestAnimationFrame(restoreReading); };
+  request('state').then((data) => { state = data; viewNodeId = active(); openActivePath(); render(); }).catch((error) => status(error.message));
+</script>
+</body>
+</html>
