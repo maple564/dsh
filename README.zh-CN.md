@@ -25,6 +25,20 @@
 
 没有对应原文的新问题，也可以通过 **新话题支线** 挂到同一个主线下。例如，“计算方法”下并列放置矩阵迭代、数值积分和计算器使用。
 
+## 一眼看懂
+
+```mermaid
+flowchart LR
+  A[正常阅读主线] --> B[选中一句 · 深入追问]
+  B --> C[独立支线 · 可继续嵌套]
+  C --> D[带结论返回原处]
+  A --- E[右侧结构树]
+  E --- C
+  E --- F[其他平行话题]
+```
+
+这是流程说明，不是运行截图。真实录屏待补，已有[录制清单](docs/RECORDING.md)。
+
 ## 先看看效果
 
 通过 GitHub 的 **Code → Download ZIP** 下载并解压，直接打开 `demo/structure-flow-preview.html`。可切换示例分支、观察当前路径动效；无需账号，不产生模型请求。
@@ -63,3 +77,9 @@ dsh plugin --profile desktop add ./dsh-plugin
 觉得这个方向有用，可以点一个 Star，让更多有同样困扰的人找到它。
 
 MIT 许可证。独立社区项目，非 DeepSeek 官方产品。
+
+## 实测证据
+
+- [2026-10-31 核心流程验收（公开脱敏版）](docs/validation/dsh-mvp-final-acceptance-result-2026-10-31.md)：逐步操作、嵌套/平行、返回位置、持久化、拒绝边界和 Token 记录。
+- [2026-11-01 上下文 A/B 实测（公开脱敏版）](docs/validation/token-context-ab-result-2026-11-01.md)：同锚点、同问题的一组对照，含局限。
+- [本次发布的本地检查](docs/BUILD-REPORT.md)。历史验收不等于最新版本完整验收。

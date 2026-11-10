@@ -26,3 +26,7 @@ One matched A/B pair on 2026-11-01 recorded A: input 154, cacheRead 13,184, outp
 The plugin uses localStorage in the active browser profile for branch associations and manually entered conclusions. DSH stores the actual child Sessions. The optional Skill uses local JSON files separately. Clearing localStorage or changing profiles can leave DSH Sessions present without the plugin tree. There is no cross-profile backup/sync system in this preview.
 
 Public release materials omit private state files, credentials, personal screenshots and internal handoff logs. The standalone demos use example content and do not call a model.
+
+## Detailed historical records
+
+Public redacted reports: [core acceptance](validation/dsh-mvp-final-acceptance-result-2026-10-31.md) and [context A/B](validation/token-context-ab-result-2026-11-01.md). These preserve the original reported results, not a new independent rerun.

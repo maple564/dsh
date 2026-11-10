@@ -25,6 +25,20 @@ Conversation Structure gives that detour its own place:
 
 No passage to highlight? Use **New topic branch / 新话题支线** to open a related topic under the same main conversation.
 
+## At a glance
+
+```mermaid
+flowchart LR
+  A[Read the main conversation] --> B[Select a passage]
+  B --> C[Explore in a child conversation]
+  C --> D[Return with a conclusion]
+  A --- E[Branch tree]
+  E --- C
+  E --- F[Parallel topics]
+```
+
+Workflow illustration, not a recording. A real DSH clip is still pending; see the [capture checklist](docs/RECORDING.md).
+
 ## Try the interaction before installing
 
 Download this repository with **Code → Download ZIP**, extract it, and open `demo/structure-flow-preview.html` in a browser. It is a local visual demo with example data: no account, model request, or DSH connection.
@@ -91,3 +105,9 @@ If this solves a problem you have, a star helps others discover it. Bug reports 
 ## License
 
 MIT. This is an independent community project, not an official DeepSeek product.
+
+## Test evidence
+
+- [Core flow acceptance, 2026-10-31 (Chinese, redacted)](docs/validation/dsh-mvp-final-acceptance-result-2026-10-31.md): steps, navigation, persistence, rejection cases and usage.
+- [Context A/B experiment, 2026-11-01 (Chinese, redacted)](docs/validation/token-context-ab-result-2026-11-01.md): one matched pair, including limitations.
+- [Release preparation checks](docs/BUILD-REPORT.md). Historical acceptance does not certify all current additions.
