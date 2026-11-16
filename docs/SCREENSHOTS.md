@@ -1,5 +1,13 @@
 # Conversation Structure in DSH Desktop
 
+## Reviewing a downloads folder
+
+DSH Desktop, November 16, 2026 (local development build). Both follow-ups are still in progress while the main chat previews the folder layout.
+
+![Folder preview with parallel quote and ticket branches](assets/dsh-downloads.jpg)
+
+## Numerical integration
+
 Cropped desktop captures from November 10, 2026. The conversation is about numerical integration and calculator settings.
 
 **Two parallel topics.** The current-location marker is on the Cotes branch.

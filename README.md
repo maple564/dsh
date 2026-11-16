@@ -4,25 +4,25 @@
 
 [中文](README.zh-CN.md) · [Install the plugin](docs/INSTALL.md) · [What has been tested](docs/STATUS.md)
 
-![DeepSeek Harness with the Cotes formula conversation on the left and two parallel branches on the right](docs/assets/dsh-cotes.jpg)
+![A folder preview in DSH with separate quote and train ticket conversations](docs/assets/dsh-downloads.jpg)
 
-*DSH Desktop, November 10. The reader has two side conversations open under the same topic. The highlighted node shows which one they are reading.*
+*November 16, local development build. The main chat previews the folder layout. Two questions from the same answer sit side by side in the conversation tree.*
 
-### Try a side question right here
+### Try a side question
 
-Imagine reading this line in a numerical integration example:
+> Put the exhibition quotes in one folder and the train ticket in another.
 
-> Evaluate the integrand at each node. If it contains **sin(1)**, check your calculator’s angle setting first.
+<details><summary><b>↳ Quotes · Did the supplier change the price?</b></summary>
 
-<details><summary><b>↳ Follow up on “sin(1)” — degrees or radians?</b></summary>
-
-In standard mathematical notation the argument is in radians. A calculator in degree mode evaluates a different angle. Switch to RAD and you should get about 0.84147.
-
-**Back at the passage** · Your note could read “Use RAD for this example.” Close this branch to keep reading the formula.
+Yes. Both documents cover 40 booklets. Revision 2 drops the unit price from CNY 28 to 25, bringing the total down from CNY 1,240 to 1,120.
 
 </details>
 
-Continue by multiplying each value by its quadrature weight.
+<details><summary><b>↳ Train ticket · How can I find it if I forget the date?</b></summary>
+
+Put the destination first. Searching for Hangzhou will find `Hangzhou-East_2026-11-06_train_73-CNY.pdf`.
+
+</details>
 
 This expandable example uses a fixed answer. In DSH, select the passage and click **深入追问** to open a child conversation with your model. **返回原文** returns you to the source, where you can keep a one-line conclusion. Use the built-in quote action when you want the follow-up in the same conversation.
 
