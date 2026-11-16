@@ -1,55 +1,32 @@
-# Conversation Structure
+# Conversation Structure for DeepSeek Harness
 
-### Follow the tangent. Keep your place.
+**Ask about one sentence in a side conversation, then return to the exact passage with your conclusion.**
 
-**Highlight a sentence. Explore it in a branch. Bring a conclusion back to where you were reading.**
+[中文](README.zh-CN.md) · [Install the plugin](docs/INSTALL.md) · [What has been tested](docs/STATUS.md)
 
-A conversation UI plugin for **DeepSeek Harness (DSH)**, with anchored follow-ups, parallel topics, and a navigable branch tree.
+![DeepSeek Harness with the Cotes formula conversation on the left and two parallel branches on the right](docs/assets/dsh-cotes.jpg)
 
-[中文](README.zh-CN.md) · [Installation](docs/INSTALL.md) · [What is verified](docs/STATUS.md) · [Release notes](CHANGELOG.md)
+*DSH Desktop, November 10. The reader has two side conversations open under the same topic. The highlighted node shows which one they are reading.*
 
-![Illustration: explore a side question and return to the source](docs/assets/overview.svg)
+### Try a side question right here
 
-*Interaction illustration, not a screenshot. This is an experimental preview; it requires DSH for real AI conversations.*
+Imagine reading this line in a numerical integration example:
 
-## The moment this is for
+> Evaluate the integrand at each node. If it contains **sin(1)**, check your calculator’s angle setting first.
 
-You are reading an explanation. One sentence deserves a deeper question. A few follow-ups later, the original thread is buried.
+<details><summary><b>↳ Follow up on “sin(1)” — degrees or radians?</b></summary>
 
-Conversation Structure gives that detour its own place:
+In standard mathematical notation the argument is in radians. A calculator in degree mode evaluates a different angle. Switch to RAD and you should get about 0.84147.
 
-1. **Highlight** a supported passage in a completed answer.
-2. **Branch** into a real child Session and keep asking.
-3. **Return** to the source, optionally leaving a short conclusion.
-4. **Navigate** parallel and nested topics from a collapsible tree.
+**Back at the passage** · Your note could read “Use RAD for this example.” Close this branch to keep reading the formula.
 
-No passage to highlight? Use **New topic branch / 新话题支线** to open a related topic under the same main conversation.
+</details>
 
-## At a glance
+Continue by multiplying each value by its quadrature weight.
 
-```mermaid
-flowchart LR
-  A[Read the main conversation] --> B[Select a passage]
-  B --> C[Explore in a child conversation]
-  C --> D[Return with a conclusion]
-  A --- E[Branch tree]
-  E --- C
-  E --- F[Parallel topics]
-```
+This expandable example uses a fixed answer. In DSH, select the passage and click **深入追问** to open a child conversation with your model. **返回原文** returns you to the source, where you can keep a one-line conclusion. Use the built-in quote action when you want the follow-up in the same conversation.
 
-Workflow illustration, not a recording. A real DSH clip is still pending; see the [capture checklist](docs/RECORDING.md).
-
-## Try the interaction before installing
-
-Download this repository with **Code → Download ZIP**, extract it, and open `demo/structure-flow-preview.html` in a browser. It is a local visual demo with example data: no account, model request, or DSH connection.
-
-For a local state-engine demo with simulated answers:
-
-```sh
-node demo/server.mjs
-```
-
-Open `http://127.0.0.1:4173`. This demo does not call an AI model.
+[More real UI screenshots](docs/SCREENSHOTS.md) · [Offline tree demo](demo/structure-flow-preview.html) (download the HTML and open it in a browser)
 
 ## Use with DSH
 
